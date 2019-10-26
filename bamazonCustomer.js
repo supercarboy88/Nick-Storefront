@@ -27,44 +27,48 @@ connection.connect(function(err) {
     inquirer.prompt([{
       type:'input',
       name:'choice',
-      message: "What is the item ID of the product would you like to purchase?",
-      validate: function (value) {
-        if (isNaN(value) == false) {
-            return true;
-        } else {
-            return false;
+      message: "What is the item ID of the product would you like to purchase?[Quit with Q]"
+    }]).then(function(answer){
+      var correct = false;
+      if(answer.choice.toUpperCase()=="Q"){
+        process.exit();
+      }
+      for (var i = 0; i < res.length; i++){
+        if(res[i].item_id===parseInt(answer.choice)){
+          correct = true;
+          var product = parseInt(answer.choice);
+          var id = i;
+          inquirer.prompt({
+            type: "input",
+            name: "quantity",
+            message: "How many would you like to purchase?",
+            validate: function (value) {
+                if (isNaN(value) == false) {
+                    return true;
+                } else {
+                    return false;
+                }
+              }
+          }).then(function(answer){
+            if (product >= res[id].stockquantity) {
+              connection.query(`UPDATE products 
+                SET stockquantity = ` + String(res[id].stockquantity - answer.quantity) +
+                " WHERE id = " + res[id].id + ";",
+                  function (err, res2) {
+                    if (err) throw err;
+                    console.log("\n-----------------------------\n"
+                    +"Your total is $" + (res[id].price * answer.quantity) + ". Thank you for your purchase!");
+                  showitems();
+                  })
+            } else{
+              console.log("Insufficient Quantity!");
+              promptcustomer(res);
+            }
+          })
         }
       }
-    },
-    {
-      type: "input",
-      name: "quantity",
-      message: "How many would you like to purchase?",
-      validate: function (value) {
-          if (isNaN(value) == false) {
-              return true;
-          } else {
-              return false;
-          }
-        }
-      },
-    ])
-    .then(answers => {
-      var selectedItem = res.filter(function (item) {
-          return (item.item_id === parseInt(answers.choice));
-      })
-      if (parseInt(answers.quantity) <= selectedItem[0].stockquantity) {
-          connection.query(`UPDATE products 
-            SET stockquantity = ` + String(selectedItem[0].stockquantity - answers.quantity) +
-            " WHERE id = " + selectedItem[0].id + ";",
-              function (err, res) {
-                if (err) throw err;
-                console.log("\n-----------------------------\n\n"
-                +"Your total is $" + (selectedItem[0].price * answers.quantity) + ". Thank you for your purchase!");
-              showitems();
-              })
-      } else{
-        console.log("Insufficient Quantity!");
+      if(i==res.length && correct == false){
+        console.log("Not a valid selection!");
         promptcustomer(res);
       }
     })

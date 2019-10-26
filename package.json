@@ -1,0 +1,24 @@
+{
+  "name": "nick-storefront",
+  "version": "1.0.0",
+  "description": "nick-storefront client app",
+  "main": "bamazonCustomer.js",
+  "dependencies": {
+    "inquirer": "^7.0.0",
+    "mysql": "^2.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/supercarboy88/Nick-Storefront.git"
+  },
+  "author": "Nick Ying",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/supercarboy88/Nick-Storefront/issues"
+  },
+  "homepage": "https://github.com/supercarboy88/Nick-Storefront#readme"
+}
